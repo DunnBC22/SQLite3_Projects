@@ -1,0 +1,846 @@
+
+(base) ...:~ briandunn$ cd Documents/GitHub/SQLite3/Restaurant
+(base) ...:Restaurant briandunn$ ls
+(base) ...:Restaurant briandunn$ sqlite3 restaurants.db
+SQLite version 3.33.0 2020-08-14 13:23:32
+Enter ".help" for usage hints.
+sqlite> .database
+main: ~/Documents/GitHub/SQLite3/Restaurant/restaurants.db
+sqlite> ATTACH DATABASE '~/Documents/GitHub/SQLite3/Restaurant/restaurants.db' as 'r';
+sqlite> .mode csv
+sqlite> .separator ","
+sqlite> .headers on
+sqlite> .show
+        echo: off
+         eqp: off
+     explain: auto
+     headers: on
+        mode: csv
+   nullvalue: ""
+      output: stdout
+colseparator: ","
+rowseparator: "\r\n"
+       stats: off
+       width: 
+    filename: restaurants.db
+sqlite> .import '/Users/briandunn/Desktop/SQLite3/Restaurants/Future50.csv' Future50
+CREATE TABLE Future50(...) failed: database is locked
+sqlite> .import '/Users/briandunn/Desktop/SQLite3/Restaurants/Independence100.csv' Independence100
+/Users/briandunn/Desktop/SQLite3/Restaurants/Independence100.csv:1: INSERT failed: datatype mismatch
+sqlite> .import '/Users/briandunn/Desktop/SQLite3/Restaurants/Top250.csv' Top250 
+/Users/briandunn/Desktop/SQLite3/Restaurants/Top250.csv:1: INSERT failed: datatype mismatch
+sqlite> .import '/Users/briandunn/Desktop/SQLite3/Restaurants/Future50.csv' Future50
+/Users/briandunn/Desktop/SQLite3/Restaurants/Future50.csv:1: INSERT failed: datatype mismatch
+sqlite> .databases
+main: /Users/briandunn/Documents/GitHub/SQLite3/Restaurant/restaurants.db
+r: /Users/briandunn/Documents/GitHub/SQLite3/Restaurant/restaurants.db
+sqlite> .tables
+Future50           Top250             r.Independence100
+Independence100    r.Future50         r.Top250         
+sqlite> .schema
+CREATE TABLE Future50 (
+	ranking	INTEGER NOT NULL,
+	name	TEXT NOT NULL,
+	location	TEXT,
+	Sales	INTEGER,
+	YOY_Sales	NUMERIC,
+	Units	 INTEGER,
+	YOY_Units	NUMERIC,
+	Unit_Volume	INTEGER,
+	Franchising	TEXT,
+	PRIMARY KEY(ranking)
+);
+CREATE TABLE Independence100 (
+	ranking	INTEGER NOT NULL,
+	name	TEXT NOT NULL,
+	sales	INTEGER,
+	ave_check	INTEGER,
+	city	TEXT,
+	state	TEXT,
+	meals_served	INTEGER,
+	PRIMARY KEY(ranking)
+);
+CREATE TABLE Top250 (
+	ranking	INTEGER NOT NULL,
+	name	TEXT NOT NULL,
+	Sales	INTEGER,
+	YOY_Sales	NUMERIC,
+	Units INTEGER,
+	YOY_Units	NUMERIC,
+	segment_category	TEXT,
+	PRIMARY KEY(ranking)
+);
+CREATE TABLE r.Future50 (
+	ranking	INTEGER NOT NULL,
+	name	TEXT NOT NULL,
+	location	TEXT,
+	Sales	INTEGER,
+	YOY_Sales	NUMERIC,
+	Units	 INTEGER,
+	YOY_Units	NUMERIC,
+	Unit_Volume	INTEGER,
+	Franchising	TEXT,
+	PRIMARY KEY(ranking)
+);
+CREATE TABLE r.Independence100 (
+	ranking	INTEGER NOT NULL,
+	name	TEXT NOT NULL,
+	sales	INTEGER,
+	ave_check	INTEGER,
+	city	TEXT,
+	state	TEXT,
+	meals_served	INTEGER,
+	PRIMARY KEY(ranking)
+);
+CREATE TABLE r.Top250 (
+	ranking	INTEGER NOT NULL,
+	name	TEXT NOT NULL,
+	Sales	INTEGER,
+	YOY_Sales	NUMERIC,
+	Units INTEGER,
+	YOY_Units	NUMERIC,
+	segment_category	TEXT,
+	PRIMARY KEY(ranking)
+);
+sqlite> SELECT sqlite_version() AS 'SQLite Version';
+"SQLite Version"
+3.33.0
+sqlite> SELECT COUNT(ranking) FROM Top250;
+COUNT(ranking)
+250
+sqlite> SELECT ranking, name, sales, YOY_Sales FROM Top250 WHERE YOY_Sales >10;
+ranking,name,Sales,YOY_Sales
+3,Chick-fil-A,11320,13
+12,"Chipotle Mexican Grill",5509,14.8
+17,"Panda Express",3946,12
+19,"Popeyes Louisiana Kitchen",3812,18.3
+26,"Texas Roadhouse",3016,11
+38,"Culver's",1795,13.9
+42,"Raising Cane's Chicken Fingers",1466,23.8
+44,Wingstop,1363,19
+46,"Jersey Mike's Subs",1340,16.7
+71,"Shake Shack",622,31.8
+77,"Tropical Smoothie Cafe",576,21.8
+79,"Dutch Bros. Coffee",567,15
+82,"First Watch",558,35.1
+84,"Freddy's Frozen Custard & Steakburgers",535,12.9
+89,"Portillo's",505,12.2
+91,"The Habit Burger Grill",500,14.5
+93,"MOD Pizza",483,23.8
+94,"Smoothie King",462,11.2
+98,"Miller's Ale House",446,10.2
+108,"Saltgrass Steak House",402,14.9
+111,"Texas de Brazil Churrascaria",370,10.5
+113,"Blaze Pizza",366,12.4
+120,"Cooper's Hawk Winery & Restaurants",338,19.9
+122,"Black Bear Diner",336,15.3
+128,"Fogo de Chao",326,10.1
+140,"Torchy's Tacos",272,17.3
+156,"Uncle Julio's",239,11.7
+166,"Lazy Dog Restaurant & Bar",213,21.3
+169,"Del Frisco's Double Eagle Steak House",205,12.4
+179,"True Food Kitchen",190,13.8
+185,Sweetgreen,184,16.8
+187,"Mountain Mike's Pizza",181,10.9
+201,"Metro Diner",171,36.3
+215,"Chicken Salad Chick",153,39.5
+216,"Paris Baguette",152,14.5
+220,"Taziki's Mediterranean Cafe",149,11.9
+226,Topgolf,144,14.6
+227,"Ocean Prime",144,20.2
+235,"Mission BBQ",136,25
+236,"Walk-On's Sports Bistreaux",133,27.8
+245,Gyu-Kaku,129,18.6
+248,"Lupe Tortilla",127,12.1
+249,"Cook-Out Restaurant",126,10.1
+250,Jollibee,126,15.2
+sqlite> SELECT ranking, name, sales, Units, segment_category FROM Top250 GROUP BY segment_category ORDER BY ranking;
+ranking,name,Sales,Units,segment_category
+1,"McDonald's",40412,13846,"Quick Service & Burger"
+2,Starbucks,21380,15049,"Quick Service & Coffee Cafe"
+3,Chick-fil-A,11320,2470,"Quick Service & Chicken"
+4,"Taco Bell",11293,6766,"Quick Service & Mexican"
+6,Subway,10200,23801,"Quick Service & Sandwich"
+9,"Domino's",7044,6126,"Quick Service & Pizza"
+10,"Panera Bread",5890,2160,"Fast Casual & Bakery Cafe"
+12,"Chipotle Mexican Grill",5509,2584,"Fast Casual & Mexican"
+15,"Olive Garden",4287,866,"Casual Dining & Italian/Pizza"
+16,"Applebee's",4085,1665,"Casual Dining & Varied Menu"
+17,"Panda Express",3946,2209,"Fast Casual & Asian/Noodle"
+21,"Dairy Queen",3760,4381,"Quick Service & Frozen Desserts"
+22,"Buffalo Wild Wings",3669,1206,"Casual Dining & Sports Bar"
+25,IHOP,3266,1710,"Family Dining & Family Style"
+26,"Texas Roadhouse",3016,553,"Casual Dining & Steak"
+31,"Red Lobster",2490,679,"Casual Dining & Seafood"
+34,"Jimmy John's Gourmet Sandwiches",2105,2787,"Fast Casual & Sandwich"
+36,"Zaxby's",1886,910,"Fast Casual & Chicken"
+39,"Golden Corral",1746,483,"Quick Service & Family Casual"
+40,"Five Guys Burgers and Fries",1661,1368,"Fast Casual & Burger"
+52,"P.F. Chang's",917,221,"Casual Dining & Asian"
+55,"Krispy Kreme",887,364,"Quick Service & Snack"
+67,"Ruth's Chris Steak House",703,135,Steak
+77,"Tropical Smoothie Cafe",576,834,"Quick Service & Beverage"
+78,"Dave & Buster's",571,132,"Sports Bar"
+80,"Captain D's Seafood Kitchen",561,540,"Quick Service & Seafood"
+87,"Einstein Bros. Bagels",517,710,"Quick Service & Bakery Cafe"
+93,"MOD Pizza",483,467,"Fast Casual & Pizza"
+96,"The Capital Grille",461,58,"Fine Dining & Steak"
+102,"Chuy's",426,100,Mexican
+103,"O'Charley's",426,196,"Varied Menu"
+104,"Pollo Tropical",425,174,Chicken
+105,"Maggiano's Little Italy",417,53,Italian/Pizza
+106,Cicis,410,420,Pizza
+107,"Long John Silver's",404,850,Seafood
+112,"Cold Stone Creamery",369,895,"Frozen Desserts"
+114,"Peet's Coffee",357,423,"Coffee Cafe"
+115,"Dickey's Barbecue Pit",349,497,BBQ
+116,"Zoes Kitchen",348,256,Sandwich
+117,"Corner Bakery_Cafe",348,175,"Bakery Cafe"
+118,"Krystal Co.",343,318,Burger
+119,Benihana,340,71,Asian
+121,"Big Boy/Frisch's Big Boy",338,194,"Family Style"
+137,"Sarku Japan",281,224,Asian/Noodle
+149,Sizzler,259,122,"Family Casual"
+171,Cinnabon,201,956,Snack
+185,Sweetgreen,184,102,Healthy
+220,"Taziki's Mediterranean Cafe",149,93,Ethnic
+237,"The Coffee Bean & Tea Leaf",133,282,"Coffee Caf?"
+sqlite> ALTER TABLE Top250 ADD COLUMN DB_name  text AS ('Top250');
+sqlite> ALTER TABLE Independence100 ADD COLUMN DB_name  text AS ('Independence100');
+sqlite> ALTER TABLE Future50 ADD COLUMN DB_name  text AS ('Future50');
+sqlite> INSERT INTO Future50 (ranking, name, location, sales, YOY_Sales, Units, YOY_Units, Unit_Volume, Franchising) VALUES (51, 'Brians Grill', 'Madison, WI', 40, 125, 40, 125, 600, 'No');
+sqlite> UPDATE Future50 SET Units=45 WHERE ranking = 51;
+sqlite> SELECT * FROM Future50 LIMIT 20 OFFSET 31;
+ranking,name,location,Sales,YOY_Sales,Units,YOY_Units,Unit_Volume,Franchising,DB_name
+32,"Just Salad","New York, N.Y.",42,22.7,38,26.7,1240,No,Future50
+33,"Jeni's Splendid Ice Creams","Columbus, Ohio",42,22.4,44,22.2,1050,No,Future50
+34,Boqueria,"New York, N.Y.",27,22,7,16.7,4260,No,Future50
+35,"Quickway Japanese Hibachi","Fairfax, Va.",22,21.4,25,19,985,Yes,Future50
+36,Surcheros,"Douglas, Ga.",22,21.3,20,17.6,1230,Yes,Future50
+37,"Famous Toastery","Charlotte, N.C.",40,21.2,27,8,1540,Yes,Future50
+38,"Culinary Dropout","Scottsdale, Ariz.",20,20.8,7,16.7,3120,No,Future50
+39,"Condado Tacos","Columbus, Ohio",38,19.9,15,15.4,2755,No,Future50
+40,"The Flying Biscuit Cafe","Atlanta, Ga.",29,19.5,21,16.7,1510,Yes,Future50
+41,"Blue Sushi Sake Grill","Omaha, Neb.",49,19.5,14,16.7,3500,No,Future50
+42,"The Human Bean","Medford, Ore.",47,19,97,19.8,535,Yes,Future50
+43,"Spitz Mediterranean Street Food","Los Angeles, Calif.",28,18.8,11,10,2700,No,Future50
+44,"Tacos 4 Life","Conway, Ark.",25,18.4,16,6.7,1620,Yes,Future50
+45,"Pita Mediterranean Street Food","Fairburn, Ga.",38,17.8,32,10.3,1260,Yes,Future50
+46,"LA Crawfish","McAllen, Texas",48,17.6,25,13.6,2050,Yes,Future50
+47,&pizza,"Washington, D.C.",45,17.1,35,9.4,1350,No,Future50
+48,"Super Duper Burgers","San Francisco, Calif.",39,16.9,16,14.3,2630,No,Future50
+49,"StoneFire Grill","Agoura Hills, Calif.",31,16,13,8.3,2550,No,Future50
+50,"Gus's World Famous Fried Chicken","Memphis, Tenn.",44,14.4,28,7.7,1600,Yes,Future50
+51,"Brians Grill","Madison, WI",40,125,45,125,600,No,Future50
+sqlite> SELECT  DB_name AS 'Table', round(min(YOY_Sales),2) AS 'Min Sales', round(max(YOY_Sales),2) AS 'Max Sales', round(sum(YOY_Sales),2) AS 'Total Sales', round(avg(YOY_Sales),2) AS 'Average Sales' FROM Future50;
+Table,"Min Sales","Max Sales","Total Sales","Average Sales"
+Future50,14.4,130.5,1809.9,35.49
+sqlite> CREATE INDEX IF NOT EXISTS future_idx ON Future50(ranking);
+sqlite> CREATE INDEX IF NOT EXISTS independence_idx ON Independence100(ranking); 
+sqlite> CREATE INDEX IF NOT EXISTS top_idx ON Top250(ranking);
+sqlite> CREATE VIEW IF NOT EXISTS futureSales AS SELECT ranking, name, sales, YOY_Sales FROM Future50;
+sqlite> SELECT name, city || ', ' || state FROM Independence100;
+name,"city || ', ' || state"
+"Carmine's (Times Square)","New York, NY"
+"The Boathouse Orlando","Orlando , Fla"
+"Old Ebbitt Grill","Washington, DC"
+"LAVO Italian Restaurant & Nightclub","New York, NY"
+"Bryant Park Grill & Cafe","New York, NY"
+"Gibsons Bar & Steakhouse","Chicago, Ill"
+"Top of the World at the STRAT ","Las Vegas, Nev"
+"Maple & Ash","Chicago, Ill"
+Balthazar,"New York, NY"
+"Smith & Wollensky","New York, NY"
+"Angus Barn","Raleigh, NC"
+"Prime 112","Miami Beach, Fla"
+"Joe's Seafood, Prime Steak & Stone Crab","Washington, DC"
+"Junior's (Times Square)","New York, NY"
+"The Hamilton","Washington, DC"
+"Joe's Seafood, Prime Steak & Stone Crab","Chicago, Ill"
+"Joe's Seafood, Prime Steak & Stone Crab","Las Vegas, Nev"
+"Gibsons Italia","Chicago, Ill"
+Komodo,"Miami, Fla"
+Buddakan,"New York, NY"
+"Bazaar Meat by Jose Andres","Las Vegas, Nev"
+"SW Steakhouse","Las Vegas, Nev"
+"St. Elmo Steak House","Indianapolis, Ind"
+"RPM Steak","Chicago, Ill"
+"Mon Ami Gabi","Las Vegas, Nev"
+"Gibsons Bar & Steakhouse","Oak Brook, Ill"
+Paddlefish,"Orlando , Fla"
+"Taste of Texas","Houston, Texas"
+Parc,"Philadelphia, Pa"
+"Bob Chinn's Crab House","Wheeling, Ill"
+"Quality Meats","New York, NY"
+"Del Posto","New York, NY"
+"Shooters Waterfront","Ft. Lauderdale, Fla"
+"Bottega Louie","Los Angeles, Calif"
+"Le Diplomate","Washington, DC"
+"Gibsons Bar & Steakhouse","Rosemont, Ill"
+"Lavo Italian Restaurant & Lounge","Las Vegas, Nev"
+"Prime Steakhouse","Las Vegas, Nev"
+Makoto,"Bal Harbour, Fla"
+"Original Joe's Westlake","Daly City, Calif"
+"Shaw's Crab House","Chicago, Ill"
+"Founding Farmers (Washington, D.C.)","Washington, DC"
+"Junior's (49th Street)","New York, NY"
+"Chops Lobster Bar","Atlanta, Ga"
+"Chicago Cut Steakhouse","Chicago, Ill"
+"Swift & Sons","Chicago, Ill"
+"Harris Ranch Inn & Restaurant","Coalinga, Calif"
+"Sparks Steak House","New York, NY"
+"Quality Italian","New York, NY"
+"Frankenmuth Bavarian Inn","Frankenmuth, Mich"
+"Tavern on the Green","New York, NY"
+"Abe & Louie's","Boston, Mass"
+"Rusty Pelican","Miami, Fla"
+"Beauty & Essex (New York City)","New York, NY"
+"Grand Central Oyster Bar","New York, NY"
+"Delmonico Steakhouse","Las Vegas, Nev"
+"Portland City Grill","Portland, Ore"
+"Zehnder's of Frankenmuth","Frankenmuth, Mich"
+"The Rustic Inn","Ft. Lauderdale, Fla"
+"Harry Caray's Italian Steakhouse","Chicago, Ill"
+"Keens Steakhouse","New York, NY"
+"The Lobster House","Cape May, NJ"
+"China Live","San Francisco, Calif"
+"Prime & Provisions","Chicago, Ill"
+"Carmine's (Las Vegas)","Las Vegas, Nev"
+Swan,"Miami, Fla"
+"15th Street Fisheries","Fort Lauderdale, Fla "
+"Atlanta Fish Market","Atlanta, Ga"
+"Acme Feed & Seed","Nashville, Tenn"
+"Hugo's Frog Bar & Fish House","Chicago, Ill"
+"Cliff House","San Francisco, Calif"
+"Castaway Burbank","Burbank, Calif"
+"Matt's El Rancho","Austin, Texas"
+"Timberline Steaks and Grille","Denver, Colo"
+"Beauty & Essex (Las Vegas)","Las Vegas, Nev"
+"Carmine's (Atlantic City)","Atlantic City, NJ"
+"Junior's (Brooklyn)","New York, NY"
+"Quartino Ristorante & Wine Bar","Chicago, Ill"
+"Paradise Cove Beach Cafe","Malibu, Calif"
+"BOA Steakhouse ","West Hollywood, Calif"
+"Original Joe's","San Francisco, Calif"
+"Founding Farmers (McLean, Va.)","McLean, Va"
+"Siena Tavern","Chicago, Ill"
+"Girl & the Goat","Chicago, Ill"
+"Tavern on Rush","Chicago, Ill"
+"Harry & Izzy's Circle Centre","Indianapolis, Ind"
+"Scoma's","San Francisco, Calif"
+"Farmers Fishers Bakers","Washington, DC"
+"Southern Steak & Oyster","Nashville, Tenn"
+"Big Texan Steak Ranch","Amarillo, Texas"
+"Park Avenue Summer (Autumn, Winter, Spring)","New York, NY"
+"Farmers & Distillers","Washington, DC"
+"Virgil's Real Barbecue","New York, NY"
+"Carmine's (Washington, D.C.)","Washington, DC"
+"Franciscan Crab Restaurant","San Francisco, Calif"
+"George's at the Cove","La Jolla, Calif"
+"Le Coucou","New York, NY"
+"Mi Vida","Washington, DC"
+Upland,"New York, NY"
+"Virgil's Real Barbecue","Las Vegas, Nev"
+sqlite> SELECT ranking, name, sales, DB_name FROM Top250
+   ...> UNION
+   ...> SELECT ranking, name, sales, DB_name FROM Independence100
+   ...> UNION
+   ...> SELECT ranking, name, sales, DB_name FROM Future50;
+ranking,name,Sales,DB_name
+1,"Carmine's (Times Square)",39080335,Independence100
+1,Evergreens,24,Future50
+1,"McDonald's",40412,Top250
+2,"Clean Juice",44,Future50
+2,Starbucks,21380,Top250
+2,"The Boathouse Orlando",35218364,Independence100
+3,Chick-fil-A,11320,Top250
+3,"Old Ebbitt Grill",29104017,Independence100
+3,Slapfish,21,Future50
+4,"Clean Eatz",25,Future50
+4,"LAVO Italian Restaurant & Nightclub",26916180,Independence100
+4,"Taco Bell",11293,Top250
+5,"Bryant Park Grill & Cafe",26900000,Independence100
+5,"Burger King",10204,Top250
+5,Pokeworks,49,Future50
+6,"Gibsons Bar & Steakhouse",25409952,Independence100
+6,"Playa Bowls",39,Future50
+6,Subway,10200,Top250
+7,"The Simple Greek",24,Future50
+7,"Top of the World at the STRAT ",25233543,Independence100
+7,"Wendy's",9762,Top250
+8,"Dunkin'",9228,Top250
+8,"Maple & Ash",24837595,Independence100
+8,"Melt Shop",20,Future50
+9,Balthazar,24547800,Independence100
+9,Creamistry,24,Future50
+9,"Domino's",7044,Top250
+10,"Joella's Hot Chicken",29,Future50
+10,"Panera Bread",5890,Top250
+10,"Smith & Wollensky",24501000,Independence100
+11,"Angus Barn",24268160,Independence100
+11,"Eggs Up Grill",30,Future50
+11,"Pizza Hut",5558,Top250
+12,"Chipotle Mexican Grill",5509,Top250
+12,"Dog Haus",39,Future50
+12,"Prime 112",23800000,Independence100
+13,"Joe's Seafood, Prime Steak & Stone Crab",23660000,Independence100
+13,"Sonic Drive-In",4687,Top250
+13,"Teriyaki Madness",41,Future50
+14,"Bluestone Lane",48,Future50
+14,"Junior's (Times Square)",23640652,Independence100
+14,KFC,4546,Top250
+15,"Olive Garden",4287,Top250
+15,"Original ChopShop",21,Future50
+15,"The Hamilton",23138062,Independence100
+16,"Applebee's",4085,Top250
+16,"Joe's Seafood, Prime Steak & Stone Crab",22981600,Independence100
+16,"Rapid Fired Pizza",24,Future50
+17,"Ike's Love & Sandwiches",44,Future50
+17,"Joe's Seafood, Prime Steak & Stone Crab",22859400,Independence100
+17,"Panda Express",3946,Top250
+18,"Arby's",3884,Top250
+18,"Gibsons Italia",22749232,Independence100
+18,"Vitality Bowls",37,Future50
+19,"Hawkers Asian Street Fare",22,Future50
+19,Komodo,22500000,Independence100
+19,"Popeyes Louisiana Kitchen",3812,Top250
+20,Buddakan,22395577,Independence100
+20,"Little Caesars",3811,Top250
+20,"Maple Street Biscuit Co.",39,Future50
+21,"Bazaar Meat by Jose Andres",22181607,Independence100
+21,"Bulla Gastrobar",32,Future50
+21,"Dairy Queen",3760,Top250
+22,"Buffalo Wild Wings",3669,Top250
+22,"Duck Donuts",44,Future50
+22,"SW Steakhouse",21523650,Independence100
+23,"Chili's Grill & Bar",3563,Top250
+23,"St. Elmo Steak House",21422141,Independence100
+23,"The Little Beet",23,Future50
+24,"Jack in the Box",3504,Top250
+24,"Joe & The Juice",47,Future50
+24,"RPM Steak",20853300,Independence100
+25,"By Chloe",37,Future50
+25,IHOP,3266,Top250
+25,"Mon Ami Gabi",20120210,Independence100
+26,"Gibsons Bar & Steakhouse",19831818,Independence100
+26,"Sugarfire Smokehouse",39,Future50
+26,"Texas Roadhouse",3016,Top250
+27,"Bibibop Asian Grill",44,Future50
+27,"Denny's",2691,Top250
+27,Paddlefish,19829500,Independence100
+28,"Bubbakoo's Burritos",28,Future50
+28,"Papa John's",2638,Top250
+28,"Taste of Texas",19530159,Independence100
+29,"Dos Toros Taqueria",28,Future50
+29,"Outback Steakhouse",2635,Top250
+29,Parc,19379153,Independence100
+30,"Bob Chinn's Crab House",18687601,Independence100
+30,"The Pizza Press",27,Future50
+30,Whataburger,2556,Top250
+31,"Quality Meats",18678000,Independence100
+31,"Red Lobster",2490,Top250
+31,"The Lost Cajun",20,Future50
+32,"Cracker Barrel",2482,Top250
+32,"Del Posto",18625033,Independence100
+32,"Just Salad",42,Future50
+33,"Jeni's Splendid Ice Creams",42,Future50
+33,"Shooters Waterfront",18601433,Independence100
+33,"The Cheesecake Factory",2180,Top250
+34,Boqueria,27,Future50
+34,"Bottega Louie",18521000,Independence100
+34,"Jimmy John's Gourmet Sandwiches",2105,Top250
+35,"Hardee's",2020,Top250
+35,"Le Diplomate",18490719,Independence100
+35,"Quickway Japanese Hibachi",22,Future50
+36,"Gibsons Bar & Steakhouse",18483056,Independence100
+36,Surcheros,22,Future50
+36,"Zaxby's",1886,Top250
+37,"Famous Toastery",40,Future50
+37,"Lavo Italian Restaurant & Lounge",18386262,Independence100
+37,"LongHorn Steakhouse",1867,Top250
+38,"Culinary Dropout",20,Future50
+38,"Culver's",1795,Top250
+38,"Prime Steakhouse",18248030,Independence100
+39,"Condado Tacos",38,Future50
+39,"Golden Corral",1746,Top250
+39,Makoto,18216906,Independence100
+40,"Five Guys Burgers and Fries",1661,Top250
+40,"Original Joe's Westlake",18159612,Independence100
+40,"The Flying Biscuit Cafe",29,Future50
+41,"Blue Sushi Sake Grill",49,Future50
+41,"Red Robin Gourmet Burgers and Brews",1548,Top250
+41,"Shaw's Crab House",17965500,Independence100
+42,"Founding Farmers (Washington, D.C.)",17910045,Independence100
+42,"Raising Cane's Chicken Fingers",1466,Top250
+42,"The Human Bean",47,Future50
+43,"Carl's Jr.",1423,Top250
+43,"Junior's (49th Street)",17834390,Independence100
+43,"Spitz Mediterranean Street Food",28,Future50
+44,"Chops Lobster Bar",17816450,Independence100
+44,"Tacos 4 Life",25,Future50
+44,Wingstop,1363,Top250
+45,"Chicago Cut Steakhouse",17743720,Independence100
+45,"Pita Mediterranean Street Food",38,Future50
+45,"Waffle House",1344,Top250
+46,"Jersey Mike's Subs",1340,Top250
+46,"LA Crawfish",48,Future50
+46,"Swift & Sons",17637400,Independence100
+47,&pizza,45,Future50
+47,"Bojangles'",1331,Top250
+47,"Harris Ranch Inn & Restaurant",17599468,Independence100
+48,"BJ's Restaurant & Brewhouse",1161,Top250
+48,"Sparks Steak House",17519030,Independence100
+48,"Super Duper Burgers",39,Future50
+49,"Quality Italian",17519000,Independence100
+49,"StoneFire Grill",31,Future50
+49,"TGI Fridays",1085,Top250
+50,"Frankenmuth Bavarian Inn",17388751,Independence100
+50,"Gus's World Famous Fried Chicken",44,Future50
+50,"In-N-Out Burger",957,Top250
+51,"Brians Grill",40,Future50
+51,"Steak 'n Shake",950,Top250
+51,"Tavern on the Green",17212800,Independence100
+52,"Abe & Louie's",17063477,Independence100
+52,"P.F. Chang's",917,Top250
+53,"Qdoba Mexican Eats",901,Top250
+53,"Rusty Pelican",16981741,Independence100
+54,"Beauty & Essex (New York City)",16364050,Independence100
+54,"El Pollo Loco",894,Top250
+55,"Grand Central Oyster Bar",16304883,Independence100
+55,"Krispy Kreme",887,Top250
+56,"Delmonico Steakhouse",16154000,Independence100
+56,Hooters,858,Top250
+57,"Del Taco",850,Top250
+57,"Portland City Grill",16111510,Independence100
+58,"Firehouse Subs",832,Top250
+58,"Zehnder's of Frankenmuth",16063684,Independence100
+59,"Bob Evans",795,Top250
+59,"The Rustic Inn",15700000,Independence100
+60,"Harry Caray's Italian Steakhouse",15680000,Independence100
+60,"Moe's Southwest Grill",749,Top250
+61,"Keens Steakhouse",15629700,Independence100
+61,"Papa Murphy's Pizza",748,Top250
+62,"Ruby Tuesday",731,Top250
+62,"The Lobster House",15450000,Independence100
+63,"China Live",15106280,Independence100
+63,"McAlister's Deli",725,Top250
+64,"Cheddar's Scratch Kitchen",724,Top250
+64,"Prime & Provisions",15100000,Independence100
+65,"Carmine's (Las Vegas)",15067804,Independence100
+65,"Church's Chicken",716,Top250
+66,Swan,15000000,Independence100
+66,"Tim Hortons",714,Top250
+67,"15th Street Fisheries",14978103,Independence100
+67,"Ruth's Chris Steak House",703,Top250
+68,"Atlanta Fish Market",14972300,Independence100
+68,"Carrabba's Italian Grill",653,Top250
+69,"Acme Feed & Seed",14897125,Independence100
+69,"Jason's Deli",647,Top250
+70,"Hugo's Frog Bar & Fish House",14790123,Independence100
+70,"Marco's Pizza",628,Top250
+71,"Cliff House",14465847,Independence100
+71,"Shake Shack",622,Top250
+72,"California Pizza Kitchen",621,Top250
+72,"Castaway Burbank",14407413,Independence100
+73,Baskin-Robbins,615,Top250
+73,"Matt's El Rancho",14381904,Independence100
+74,"Timberline Steaks and Grille",14362103,Independence100
+74,"Yard House",609,Top250
+75,"Beauty & Essex (Las Vegas)",14130500,Independence100
+75,"Bonefish Grill",587,Top250
+76,"Carmine's (Atlantic City)",13987843,Independence100
+76,"White Castle",579,Top250
+77,"Junior's (Brooklyn)",13908292,Independence100
+77,"Tropical Smoothie Cafe",576,Top250
+78,"Dave & Buster's",571,Top250
+78,"Quartino Ristorante & Wine Bar",13854856,Independence100
+79,"Dutch Bros. Coffee",567,Top250
+79,"Paradise Cove Beach Cafe",13654113,Independence100
+80,"BOA Steakhouse ",13552485,Independence100
+80,"Captain D's Seafood Kitchen",561,Top250
+81,"Auntie Anne's",559,Top250
+81,"Original Joe's",13177468,Independence100
+82,"First Watch",558,Top250
+82,"Founding Farmers (McLean, Va.)",13102742,Independence100
+83,"Perkins Restaurant & Bakery",541,Top250
+83,"Siena Tavern",13100000,Independence100
+84,"Freddy's Frozen Custard & Steakburgers",535,Top250
+84,"Girl & the Goat",12894700,Independence100
+85,"Checkers Drive-In Restaurants",535,Top250
+85,"Tavern on Rush",12884000,Independence100
+86,"Harry & Izzy's Circle Centre",12809921,Independence100
+86,"Noodles & Company",533,Top250
+87,"Einstein Bros. Bagels",517,Top250
+87,"Scoma's",12713394,Independence100
+88,"Farmers Fishers Bakers",12572109,Independence100
+88,Jamba,514,Top250
+89,"Portillo's",505,Top250
+89,"Southern Steak & Oyster",12566618,Independence100
+90,"Big Texan Steak Ranch",12505200,Independence100
+90,"Boston Market",501,Top250
+91,"Park Avenue Summer (Autumn, Winter, Spring)",12498000,Independence100
+91,"The Habit Burger Grill",500,Top250
+92,"Farmers & Distillers",12278839,Independence100
+92,"Logan's Roadhouse",496,Top250
+93,"MOD Pizza",483,Top250
+93,"Virgil's Real Barbecue",12245998,Independence100
+94,"Carmine's (Washington, D.C.)",12228168,Independence100
+94,"Smoothie King",462,Top250
+95,"Franciscan Crab Restaurant",12218147,Independence100
+95,"Mellow Mushroom",461,Top250
+96,"George's at the Cove",12194000,Independence100
+96,"The Capital Grille",461,Top250
+97,"Le Coucou",12187523,Independence100
+97,"Round Table Pizza",450,Top250
+98,"Mi Vida",12032014,Independence100
+98,"Miller's Ale House",446,Top250
+99,"Potbelly sandwich Shop",446,Top250
+99,Upland,11965564,Independence100
+100,"Hungry Howie's Pizza",439,Top250
+100,"Virgil's Real Barbecue",11391678,Independence100
+101,"Charleys Philly Steaks",435,Top250
+102,"Chuy's",426,Top250
+103,"O'Charley's",426,Top250
+104,"Pollo Tropical",425,Top250
+105,"Maggiano's Little Italy",417,Top250
+106,Cicis,410,Top250
+107,"Long John Silver's",404,Top250
+108,"Saltgrass Steak House",402,Top250
+109,"Chuck E. Cheese's",381,Top250
+110,"Taco John's",373,Top250
+111,"Texas de Brazil Churrascaria",370,Top250
+112,"Cold Stone Creamery",369,Top250
+113,"Blaze Pizza",366,Top250
+114,"Peet's Coffee",357,Top250
+115,"Dickey's Barbecue Pit",349,Top250
+116,"Zoes Kitchen",348,Top250
+117,"Corner Bakery_Cafe",348,Top250
+118,"Krystal Co.",343,Top250
+119,Benihana,340,Top250
+120,"Cooper's Hawk Winery & Restaurants",338,Top250
+121,"Big Boy/Frisch's Big Boy",338,Top250
+122,"Black Bear Diner",336,Top250
+123,"Twin Peaks",335,Top250
+124,"Schlotzsky's",335,Top250
+125,"Jet's Pizza",331,Top250
+126,"Famous Dave's",329,Top250
+127,"On The Border Mexican Grill & Cantina",327,Top250
+128,"Fogo de Chao",326,Top250
+129,"Ninety Nine Restaurants",324,Top250
+130,"Village Inn",313,Top250
+131,"Taco Cabana",311,Top250
+132,"Fleming's Prime Steakhouse & Wine Bar",307,Top250
+133,"Caribou Coffee",306,Top250
+134,"Jack's",290,Top250
+135,"Au Bon Pain",289,Top250
+136,"Bar Louie",284,Top250
+137,"Sarku Japan",281,Top250
+138,"Old Chicago Pizza & Taproom",275,Top250
+139,"Rally's Hamburgers",275,Top250
+140,"Torchy's Tacos",272,Top250
+141,"Pizza Ranch",269,Top250
+142,"Pappadeaux Seafood Kitchen",269,Top250
+143,"Braum's Ice Cream & Dairy Stores",268,Top250
+144,"Pei Wei Asian Diner",268,Top250
+145,"Cafe Rio Mexican Grill",267,Top250
+146,"Morton's The Steakhouse",266,Top250
+147,Smashburger,265,Top250
+148,Wienerschnitzel,265,Top250
+149,Sizzler,259,Top250
+150,"Seasons 52",253,Top250
+151,"Bahama Breeze Island Grille",252,Top250
+152,"Pret A Manger",252,Top250
+153,"Godfather's Pizza",250,Top250
+154,"Huddle House",247,Top250
+155,"Mastro's Restaurants",242,Top250
+156,"Uncle Julio's",239,Top250
+157,"Fazoli's",238,Top250
+158,"Rubio's",232,Top250
+159,"Legal Sea Foods",227,Top250
+160,"A&W All-American Food",227,Top250
+161,"Newk's Eatery",227,Top250
+162,"Fuzzy's Taco Shop",225,Top250
+163,Sbarro,218,Top250
+164,"Romano's Macaroni Grill",218,Top250
+165,"Brio Tuscan Grille",217,Top250
+166,"Lazy Dog Restaurant & Bar",213,Top250
+167,"Souplantation & Sweet Tomatoes",211,Top250
+168,"Friendly's",210,Top250
+169,"Del Frisco's Double Eagle Steak House",205,Top250
+170,"Penn Station East Coast Subs",201,Top250
+171,Cinnabon,201,Top250
+172,"Uno Pizzeria & Grill",196,Top250
+173,"J. Alexander's",195,Top250
+174,"Luby's",195,Top250
+175,"Which Wich",193,Top250
+176,"Firebirds Wood Fired Grill",192,Top250
+177,"Le Pain Quotidien",192,Top250
+178,"Sonny's BBQ",191,Top250
+179,"True Food Kitchen",190,Top250
+180,"Buca di Beppo",189,Top250
+181,"Hard Rock Cafe",187,Top250
+182,"Johnny Rockets",186,Top250
+183,Fuddruckers,185,Top250
+184,"The Original Pancake House",185,Top250
+185,Sweetgreen,184,Top250
+186,"Golden Chick",183,Top250
+187,"Mountain Mike's Pizza",181,Top250
+188,"Bubba Gump Shrimp Co.",181,Top250
+189,"The Melting Pot",181,Top250
+190,"Farmer Boys",179,Top250
+191,"Donatos Pizza",179,Top250
+192,"Shoney's",179,Top250
+193,"Taco Bueno",178,Top250
+194,"Claim Jumper",177,Top250
+195,"Wetzel's Pretzels",177,Top250
+196,"La Madeleine Country French Cafe",174,Top250
+197,"Giordano's",173,Top250
+198,"Islands Fine Burgers & Drinks",173,Top250
+199,"Mimi's Bistro & Bakery",172,Top250
+200,"Beef 'O' Brady's",171,Top250
+201,"Metro Diner",171,Top250
+202,"Bill Miller Bar-B-Q",170,Top250
+203,"Black Angus Steakhouse",168,Top250
+204,"Smokey Bones Bar & Fire Grill",168,Top250
+205,"Joe's Crab Shack",166,Top250
+206,"LaRosa's Pizzeria",164,Top250
+207,Roosters,163,Top250
+208,"Great Harvest Bread Co.",162,Top250
+209,"Shari's Cafe and Pies",161,Top250
+210,"Lee's Famous Recipe Chicken",161,Top250
+211,"Wayback Burgers",159,Top250
+212,"McCormick & Schmick's",157,Top250
+213,"Grand Lux Cafe",157,Top250
+214,"Anthony's Coal Fired Pizza",153,Top250
+215,"Chicken Salad Chick",153,Top250
+216,"Paris Baguette",152,Top250
+217,"Eat'n Park",152,Top250
+218,"Hurricane Grill & Wings",151,Top250
+219,"The Old Spaghetti Factory",150,Top250
+220,"Taziki's Mediterranean Cafe",149,Top250
+221,"Menchie's Frozen Yogurt",149,Top250
+222,"Bruegger's Bagels",148,Top250
+223,"Tijuana Flats",147,Top250
+224,"Duffy's Sports Grill",144,Top250
+225,"Eddie V's Prime Seafood",144,Top250
+226,Topgolf,144,Top250
+227,"Ocean Prime",144,Top250
+228,"Pappasito's Cantina",143,Top250
+229,"Pollo Campero",143,Top250
+230,"Houlihan's",143,Top250
+231,"Old Country Buffet/HomeTown Buffet",142,Top250
+232,"Great American Cookies",142,Top250
+233,Nobu,139,Top250
+234,BurgerFi,138,Top250
+235,"Mission BBQ",136,Top250
+236,"Walk-On's Sports Bistreaux",133,Top250
+237,"The Coffee Bean & Tea Leaf",133,Top250
+238,Yogurtland,132,Top250
+239,"Daylight Donuts",132,Top250
+240,"WaBa Grill",132,Top250
+241,"54th Street Restaurant & Drafthouse",131,Top250
+242,"Biggby Coffee",129,Top250
+243,"Costa Vida Fresh Mexican Grill",129,Top250
+244,"L&L Hawaiian Barbecue",129,Top250
+245,Gyu-Kaku,129,Top250
+246,"Rainforest Cafe",129,Top250
+247,PDQ,127,Top250
+248,"Lupe Tortilla",127,Top250
+249,"Cook-Out Restaurant",126,Top250
+250,Jollibee,126,Top250
+sqlite> SELECT DB_name AS 'Table', round(avg(sales),2) AS 'Average Sales'
+   ...> FROM (
+   ...> SELECT ranking, name, sales, DB_name FROM Top250
+   ...> UNION
+   ...> SELECT ranking, name, sales/10000, DB_name FROM Independence100
+   ...> UNION
+   ...> SELECT ranking, name, sales, DB_name FROM Future50
+   ...> ) as A
+   ...> GROUP BY DB_name;
+Table,"Average Sales"
+Future50,33.9
+Independence100,1782.88
+Top250,1242.74
+sqlite> SELECT MAX(LENGTH(name)) FROM Top250;
+MAX(LENGTH(name))
+38
+sqlite> SELECT MIN(LENGTH(name)) FROM Top250;
+MIN(LENGTH(name))
+3
+sqlite> SELECT MAX(LENGTH(name)) - MIN(LENGTH(name)) FROM Top250;
+"MAX(LENGTH(name)) - MIN(LENGTH(name))"
+35
+sqlite> .fullschema
+CREATE TABLE Future50 (
+	ranking	INTEGER NOT NULL,
+	name	TEXT NOT NULL,
+	location	TEXT,
+	Sales	INTEGER,
+	YOY_Sales	NUMERIC,
+	Units	 INTEGER,
+	YOY_Units	NUMERIC,
+	Unit_Volume	INTEGER,
+	Franchising	TEXT, DB_name  text AS ('Future50'),
+	PRIMARY KEY(ranking)
+);
+CREATE TABLE Independence100 (
+	ranking	INTEGER NOT NULL,
+	name	TEXT NOT NULL,
+	sales	INTEGER,
+	ave_check	INTEGER,
+	city	TEXT,
+	state	TEXT,
+	meals_served	INTEGER, DB_name  text AS ('Independence100'),
+	PRIMARY KEY(ranking)
+);
+CREATE TABLE Top250 (
+	ranking	INTEGER NOT NULL,
+	name	TEXT NOT NULL,
+	Sales	INTEGER,
+	YOY_Sales	NUMERIC,
+	Units INTEGER,
+	YOY_Units	NUMERIC,
+	segment_category	TEXT, DB_name  text AS ('Top250'),
+	PRIMARY KEY(ranking)
+);
+CREATE INDEX future_idx ON Future50(ranking);
+CREATE INDEX independence_idx ON Independence100(ranking);
+CREATE INDEX top_idx ON Top250(ranking);
+CREATE VIEW futureSales AS SELECT ranking, name, sales, YOY_Sales FROM Future50;
+/* No STAT tables available */
+sqlite> .show
+        echo: off
+         eqp: off
+     explain: auto
+     headers: on
+        mode: csv
+   nullvalue: ""
+      output: stdout
+colseparator: ","
+rowseparator: "\n"
+       stats: off
+       width: 
+    filename: restaurants.db
+sqlite> .headers on
+sqlite> .show
+        echo: off
+         eqp: off
+     explain: auto
+     headers: on
+        mode: csv
+   nullvalue: ""
+      output: stdout
+colseparator: ","
+rowseparator: "\n"
+       stats: off
+       width: 
+    filename: restaurants.db
+sqlite> DELETE FROM Future50 WHERE ranking=51;
+sqlite> .system pwd
+~/Documents/GitHub/SQLite3/Restaurant
+sqlite> .mode csv
+sqlite> .output Top250Output.csv
+sqlite> SELECT ranking, name, Sales, YOY_Sales, Units, YOY_Units, segment_category FROM Top250;
+sqlite> DETACH DATABASE 'r';
+sqlite> .quit
+(base) ...:Restaurant briandunn$ 
