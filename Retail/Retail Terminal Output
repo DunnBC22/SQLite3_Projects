@@ -1,0 +1,263 @@
+
+(base) ...:~ briandunn$ cd Documents/GitHub/SQLite3/Retail
+(base) ...:Retail briandunn$ sqlite3 retail.db
+SQLite version 3.33.0 2020-08-14 13:23:32
+Enter ".help" for usage hints.
+sqlite> .database
+main: /Users/briandunn/Documents/GitHub/SQLite3/Retail/retail.db
+sqlite> .tables
+features  sales     store   
+sqlite> ATTACH DATABASE '/Users/briandunn/Documents/GitHub/SQLite3/Retail/retail.db' as 'r';
+sqlite> .mode csv
+sqlite> .separator ","
+sqlite> .import '/Users/briandunn/Desktop/SQLite3/Retail/storesdataset.csv' store
+/Users/briandunn/Desktop/SQLite3/Retail/storesdataset.csv:1: INSERT failed: datatype mismatch
+sqlite> .import '/Users/briandunn/Desktop/SQLite3/Retail/FeaturesFileUpdated.csv' features
+sqlite> .import '/Users/briandunn/Desktop/SQLite3/Retail/SalesFileFormatted.csv' sales
+sqlite> SELECT COUNT(storeID) FROM sales;
+421571
+sqlite> SELECT * FROM sales LIMIT 25;
+Store,Dept,Date,Weekly_Sales,IsHoliday
+1,1,2010-05-02,24924.5,0
+1,1,2010-12-02,46039.49,1
+1,1,2010-02-19,41595.55,0
+1,1,2010-02-26,19403.54,0
+1,1,2010-05-03,21827.9,0
+1,1,2010-12-03,21043.39,0
+1,1,2010-03-19,22136.64,0
+1,1,2010-03-26,26229.21,0
+1,1,2010-02-04,57258.43,0
+1,1,2010-09-04,42960.91,0
+1,1,2010-04-16,17596.96,0
+1,1,2010-04-23,16145.35,0
+1,1,2010-04-30,16555.11,0
+1,1,2010-07-05,17413.94,0
+1,1,2010-05-14,18926.74,0
+1,1,2010-05-21,14773.04,0
+1,1,2010-05-28,15580.43,0
+1,1,2010-04-06,17558.09,0
+1,1,2010-11-06,16637.62,0
+1,1,2010-06-18,16216.27,0
+1,1,2010-06-25,16328.72,0
+1,1,2010-02-07,16333.14,0
+1,1,2010-09-07,17688.76,0
+1,1,2010-07-16,17150.84,0
+sqlite> SELECT storeID 'Store ID', storeType 'Store Type', storeSize 'Store Size' FROM store;
+1,A,151315
+2,A,202307
+3,B,37392
+4,A,205863
+5,B,34875
+6,A,202505
+7,B,70713
+8,A,155078
+9,B,125833
+10,B,126512
+11,A,207499
+12,B,112238
+13,A,219622
+14,A,200898
+15,B,123737
+16,B,57197
+17,B,93188
+18,B,120653
+19,A,203819
+20,A,203742
+21,B,140167
+22,B,119557
+23,B,114533
+24,A,203819
+25,B,128107
+26,A,152513
+27,A,204184
+28,A,206302
+29,B,93638
+30,C,42988
+31,A,203750
+32,A,203007
+33,A,39690
+34,A,158114
+35,B,103681
+36,A,39910
+37,C,39910
+38,C,39690
+39,A,184109
+40,A,155083
+41,A,196321
+42,C,39690
+43,C,41062
+44,C,39910
+45,B,118221
+sqlite> SELECT ST.storeType AS 'Store Type', round(avg(F.temperature),2) AS 'Ave. Temperature', round(avg(F.fuel_price),0) AS 'Ave. Fuel Price', round(avg(F.CPI),2) AS 'Ave. CPI', round(avg(F.unemployment),2) AS 'Ave. Unemployment Rate'
+   ...> FROM features AS 'F' INNER JOIN store AS 'ST'
+   ...> USING (storeID)
+   ...> GROUP BY ST.storeType;
+A,59.74,3.0,162.86,7.09
+B,56.38,3.0,156.92,7.22
+C,66.36,3.0,159.32,8.05
+sqlite> SELECT SA.department as 'Department', round(avg(F.temperature),2) as 'Ave. Temperature', round(avg(F.fuel_price),2) as 'Ave. Fuel Price', round(avg(F.unemployment),2) as 'Ave. Unemployment', round(avg(F.CPI),2) as 'Ave. CPI'
+   ...> FROM features as F
+   ...> INNER JOIN sales as SA
+   ...> USING (storeID);
+Dept,58.82,3.41,7.24,159.78
+sqlite> SELECT SA.department as 'Department', round(avg(F.temperature),2) as 'Ave. Temperature', round(avg(F.fuel_price),2) as 'Ave. Fuel Price', round(avg(F.unemployment),2) as 'Ave. Unemployment', round(avg(F.CPI),2) as 'Ave. CPI'
+   ...> FROM features as F
+   ...> INNER JOIN sales as SA
+   ...> USING (storeID)
+   ...> GROUP BY Department;
+1,59.36,3.41,7.27,160.14
+2,59.36,3.41,7.27,160.14
+3,59.36,3.41,7.27,160.14
+4,59.36,3.41,7.27,160.14
+5,59.23,3.41,7.25,159.65
+6,58.46,3.4,7.25,160.8
+7,59.36,3.41,7.27,160.14
+8,59.36,3.41,7.27,160.14
+9,59.2,3.41,7.27,159.98
+10,59.36,3.41,7.27,160.14
+11,59.35,3.41,7.27,160.14
+12,59.3,3.41,7.27,160.13
+13,59.36,3.41,7.27,160.14
+14,59.36,3.41,7.27,160.14
+16,59.36,3.41,7.27,160.14
+17,59.33,3.41,7.27,159.99
+18,59.11,3.41,7.26,159.83
+19,58.34,3.4,7.18,160.1
+20,58.89,3.41,7.23,160.41
+21,59.36,3.41,7.27,160.14
+22,58.07,3.41,7.18,160.09
+23,58.24,3.41,7.21,159.31
+24,57.7,3.41,7.16,159.9
+25,59.18,3.41,7.27,160.22
+26,58.48,3.41,7.19,160.1
+27,58.02,3.41,7.18,159.57
+28,58.69,3.41,7.26,160.0
+29,57.53,3.41,7.14,160.22
+30,57.49,3.41,7.13,160.27
+31,58.81,3.41,7.25,160.54
+32,58.47,3.41,7.24,158.82
+33,57.67,3.41,7.16,159.85
+34,57.57,3.41,7.15,160.22
+35,57.51,3.41,7.14,160.22
+36,57.51,3.41,7.14,160.24
+37,59.74,3.41,7.06,160.91
+38,59.36,3.41,7.27,160.14
+39,55.86,3.51,7.19,144.68
+40,59.36,3.41,7.27,160.14
+41,57.85,3.41,7.14,160.34
+42,59.31,3.41,7.27,160.19
+43,55.71,3.53,8.88,128.46
+44,57.88,3.41,7.19,159.94
+45,56.56,3.4,7.03,156.9
+46,59.36,3.41,7.27,160.14
+47,58.15,3.42,7.27,160.6
+48,56.71,3.35,6.52,156.9
+49,58.21,3.41,7.15,160.75
+50,53.94,3.54,7.08,142.52
+51,55.07,3.39,7.12,157.08
+52,59.02,3.41,7.27,159.8
+54,57.49,3.41,7.13,159.5
+55,58.25,3.41,7.15,160.29
+56,58.37,3.4,7.2,160.73
+58,57.98,3.42,7.21,158.71
+59,59.09,3.41,7.28,159.23
+60,59.52,3.41,7.31,159.48
+65,58.11,3.25,9.07,119.97
+67,59.36,3.41,7.27,160.14
+71,57.53,3.41,7.14,160.22
+72,58.52,3.4,7.26,160.9
+74,59.35,3.41,7.27,160.17
+77,56.75,3.43,7.19,157.43
+78,57.62,3.45,7.33,152.84
+79,59.36,3.41,7.27,160.14
+80,58.83,3.42,7.36,157.03
+81,59.36,3.41,7.27,160.14
+82,59.36,3.41,7.27,160.14
+83,58.97,3.42,7.39,156.7
+85,58.6,3.41,7.24,159.74
+87,59.29,3.41,7.26,159.91
+90,59.36,3.41,7.27,160.14
+91,59.36,3.41,7.27,160.14
+92,59.36,3.41,7.27,160.14
+93,58.96,3.42,7.39,156.72
+94,59.5,3.41,7.31,160.03
+95,59.36,3.41,7.27,160.14
+96,60.23,3.39,7.13,160.02
+97,59.19,3.41,7.31,159.07
+98,59.08,3.41,7.38,157.82
+99,59.05,3.38,7.08,164.89
+Dept,0.0,0.0,0.0,0.0
+sqlite> CREATE TABLE storesClone (
+   ...> storeID INTEGER NOT NULL,
+   ...> storeType TEXT NOT NULL,
+   ...> storeSize INTEGER,
+   ...> PRIMARY KEY(storeID)
+   ...> );
+sqlite> INSERT INTO storesClone (storeID, storeType, storeSize)
+   ...> SELECT storeID, storeType, storeSize
+   ...> FROM store;
+sqlite> .fullschema
+CREATE TABLE store (
+	storeID	INTEGER NOT NULL,
+	storeType	TEXT NOT NULL,
+	storeSize	INTEGER,
+	PRIMARY KEY(storeID)
+);
+CREATE TABLE features (
+	storeID	INTEGER NOT NULL,
+	featureDate	TEXT,
+	temperature	NUMERIC,
+	fuel_price	NUMERIC,
+	CPI	NUMERIC,
+	unemployment	NUMERIC,
+	isHoliday INTEGER,
+	FOREIGN KEY(storeID) REFERENCES store(storeID)
+);
+CREATE TABLE sales (
+	storeID	INTEGER NOT NULL,
+	department	INTEGER,
+	salesDate	TEXT,
+	weekly_sales	NUMERIC,
+	isHoliday	INTEGER,
+	FOREIGN KEY(storeID) REFERENCES store(storeID)
+);
+CREATE TABLE storesClone (
+storeID INTEGER NOT NULL,
+storeType TEXT NOT NULL,
+storeSize INTEGER,
+PRIMARY KEY(storeID)
+);
+/* No STAT tables available */
+sqlite> .show
+        echo: off
+         eqp: off
+     explain: auto
+     headers: off
+        mode: csv
+   nullvalue: ""
+      output: stdout
+colseparator: ","
+rowseparator: "\n"
+       stats: off
+       width: 
+    filename: retail.db
+sqlite> .headers on
+sqlite> .show
+        echo: off
+         eqp: off
+     explain: auto
+     headers: on
+        mode: csv
+   nullvalue: ""
+      output: stdout
+colseparator: ","
+rowseparator: "\n"
+       stats: off
+       width: 
+    filename: retail.db
+sqlite> .mode csv
+sqlite> .output storesOutput.csv
+sqlite> SELECT storeID, storeType, storeSize FROM store;
+sqlite> DETACH DATABASE 'r';
+sqlite> .quit
+(base) ...:Retail briandunn$ 
